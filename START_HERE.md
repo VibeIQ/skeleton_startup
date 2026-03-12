@@ -10,17 +10,32 @@ This repo (`skeleton_startup`) is your reusable foundation. It contains no app c
 
 ```
 skeleton_startup/
-├── .claude/skills/           # 7 best-practice skills Claude Code uses automatically
-│   ├── frontend-design/      # Bold, distinctive UI — no generic AI aesthetics
-│   ├── react-best-practices/ # React performance patterns (from Vercel)
-│   ├── web-design-guidelines/# Accessibility & UX compliance
-│   ├── composition-patterns/ # Clean component architecture
-│   ├── supabase-best-practices/ # PostgreSQL, RLS, migrations
-│   ├── stripe-best-practices/   # Payment integration patterns
-│   └── nextjs-skills/        # Next.js App Router best practices
-├── CLAUDE.md                 # Project instructions template (Claude reads this first)
-├── .env.example              # Every env var you'll need, pre-organized
-└── NEW_PROJECT_PROMPT.md     # Copy-paste prompt to bootstrap a new project
+├── README.md
+├── docs/
+│   ├── SETUP_GUIDE.md              # Full step-by-step reference
+│   ├── NEW_PROJECT_PROMPT.md        # Copy-paste prompt for day-one setup
+│   ├── ADD_SKILLS_TO_EXISTING_PROJECT.md
+│   ├── ADD_ACCESSIBILITY_TO_EXISTING_PROJECT.md
+│   ├── INSTALL_UI_UX_PRO_MAX.md
+│   └── ELITE_PROMPTS.md            # Library of copy-paste prompts
+└── template/                        # Everything that gets copied into new projects
+    ├── .claude/skills/              # 8 best-practice skills Claude Code uses automatically
+    │   ├── frontend-design/         # Bold, distinctive UI — no generic AI aesthetics
+    │   ├── react-best-practices/    # React performance patterns (from Vercel)
+    │   ├── web-design-guidelines/   # Accessibility & UX compliance
+    │   ├── composition-patterns/    # Clean component architecture
+    │   ├── supabase-best-practices/ # PostgreSQL, RLS, migrations
+    │   ├── stripe-best-practices/   # Payment integration patterns
+    │   ├── nextjs-skills/           # Next.js App Router best practices
+    │   └── ui-ux-pro-max/           # Design intelligence skill
+    ├── .github/
+    │   ├── pull_request_template.md
+    │   └── ISSUE_TEMPLATE/
+    │       ├── bug_report.md
+    │       ├── feature_request.md
+    │       └── ui_improvement.md
+    ├── CLAUDE.md                    # Project instructions template (Claude reads this first)
+    └── .env.example                 # Every env var you'll need, pre-organized
 ```
 
 **Your tech stack:** Next.js (App Router) · React · Tailwind CSS · Clerk · Supabase · Stripe · Vercel · Claude API · AssemblyAI
@@ -38,16 +53,10 @@ Go to GitHub and create a new empty repository for your project. Name it whateve
 Open Claude Code in your **new project repo** and paste this:
 
 ```
-Copy the entire .claude/ folder (with all skills), CLAUDE.md, and .env.example
-from my skeleton_startup repo into this project root. Commit and push.
+Copy everything from the template/ folder in my skeleton_startup repo into this project root. Commit and push.
 ```
 
-That's it — Claude Code does the copying for you.
-
-**If you prefer to do it manually**, copy these three things from `skeleton_startup` into your new repo:
-- `.claude/` (the entire folder)
-- `CLAUDE.md`
-- `.env.example`
+That's it — Claude Code copies the skills, GitHub templates, CLAUDE.md, and .env.example for you.
 
 ### Step 3: Customize CLAUDE.md
 
@@ -78,7 +87,7 @@ Then set your environment variables:
 
 ### Step 5: Start building
 
-Open a new Claude Code session on your project and start prompting. All 7 skills and conventions are active automatically — you don't need to do anything special.
+Open a new Claude Code session on your project and start prompting. All skills and conventions are active automatically — you don't need to do anything special.
 
 **Example first prompt:**
 
@@ -121,7 +130,7 @@ You don't invoke skills manually. Claude Code reads them automatically and appli
 
 ## Rules to Follow
 
-1. **Never build directly in `skeleton_startup`** — always copy files to a new repo first
+1. **Never build directly in `skeleton_startup`** — always copy template files to a new repo first
 2. **Start a new Claude Code session** after adding or updating CLAUDE.md or skills
 3. **Keep `skeleton_startup` as your single source of truth** — when you discover a new best practice or skill, add it here first, then copy to active projects
 4. **Don't delete the template placeholders** in this repo's CLAUDE.md — they're meant to be replaced per-project
@@ -132,10 +141,11 @@ You don't invoke skills manually. Claude Code reads them automatically and appli
 
 As you build projects, you'll learn what works. Improve the skeleton over time:
 
-1. **New skill?** Add a new `SKILL.md` under `.claude/skills/your-skill-name/` in this repo
-2. **Better conventions?** Update the `CLAUDE.md` template here
-3. **New env vars?** Add them to `.env.example` here
-4. **Active projects need updates?** Copy the changed files from `skeleton_startup` into those projects and start a new session
+1. **New skill?** Add a new `SKILL.md` under `template/.claude/skills/your-skill-name/` in this repo
+2. **Better conventions?** Update the `template/CLAUDE.md` template here
+3. **New env vars?** Add them to `template/.env.example` here
+4. **New GitHub templates?** Add them to `template/.github/` here
+5. **Active projects need updates?** Copy the changed files from `template/` into those projects and start a new session
 
 ---
 
@@ -144,12 +154,13 @@ As you build projects, you'll learn what works. Improve the skeleton over time:
 | I want to... | Do this |
 |--------------|---------|
 | Start a new project | Follow the 5 steps above |
-| Add a skill to all future projects | Add it to `skeleton_startup/.claude/skills/` |
-| Update a skill on an active project | Copy the updated skill file from skeleton, restart session |
+| Add a skill to all future projects | Add it to `template/.claude/skills/` |
+| Update a skill on an active project | Copy the updated skill file from template, restart session |
 | Use live API docs in a prompt | Add "use context7" to your prompt |
-| See the copy-paste bootstrap prompt | Open `NEW_PROJECT_PROMPT.md` |
-| See what env vars are needed | Open `.env.example` |
+| See the copy-paste bootstrap prompt | Open `docs/NEW_PROJECT_PROMPT.md` |
+| See what env vars are needed | Open `template/.env.example` |
+| See all reference guides | Browse the `docs/` folder |
 
 ---
 
-**That's it. Create a repo, copy the files, customize CLAUDE.md, add your keys, and start building.**
+**That's it. Create a repo, copy the template files, customize CLAUDE.md, add your keys, and start building.**
