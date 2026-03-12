@@ -1,18 +1,46 @@
 # Skeleton Startup
 
-A starter kit for new projects. Pre-configured with Claude Code skills, a CLAUDE.md template, and environment variable templates so you skip setup and go straight to building.
+Personal starter kit for every new project. Pre-configured Claude Code skills, accessibility standards, design workflow rules, and GitHub templates — ready to copy into any new repo.
 
-## What's Included
+## Quick Start
 
-- **`.claude/skills/`** — 7 curated skills for your tech stack (frontend design, React, accessibility, component patterns, Supabase, Stripe, Next.js)
-- **`CLAUDE.md`** — Master project instructions template for Claude Code
-- **`.env.example`** — Standard environment variables for the full stack
+1. Create a new GitHub repo for your project
+2. Open it in Claude Code and paste:
 
-## Getting Started
+> Copy everything from the template/ folder in my skeleton_startup repo into this project root. Commit and push.
 
-1. **Clone/copy into your new project repo** — Copy the `.claude/` folder, `CLAUDE.md`, and `.env.example` into your new project root
-2. **Customize CLAUDE.md** — Update the project name, overview, and any project-specific details
-3. **Set up environment variables** — Copy `.env.example` to `.env.local` and fill in your keys
-4. **Start building** — Open a Claude Code session and begin building with all skills and conventions active from the first message
+3. Customize the CLAUDE.md:
 
-See `SETUP_GUIDE.md` for detailed instructions, and `NEW_PROJECT_PROMPT.md` for a ready-to-paste prompt.
+> Update the CLAUDE.md — this project is called [APP NAME]. It does [DESCRIPTION]. Scan the codebase and update the Overview section. Keep all skills references, conventions, and rules exactly as they are. Commit and push.
+
+4. Start a new session and build.
+
+## What's in template/
+
+| Path | Purpose |
+|------|---------|
+| .claude/skills/ | 8 curated skills (frontend-design, react-best-practices, web-design-guidelines, composition-patterns, supabase-best-practices, stripe-best-practices, nextjs-skills, ui-ux-pro-max) |
+| .github/ | PR template, bug report, feature request, and UI improvement issue templates |
+| CLAUDE.md | Master project instructions with design workflow, accessibility standards, skills references, and code conventions |
+| .env.example | Standard environment variables for Next.js + Clerk + Supabase + Stripe |
+
+## Reference Docs
+
+All guides and prompts are in the docs/ folder:
+
+| Doc | Purpose |
+|-----|---------|
+| SETUP_GUIDE.md | Full step-by-step reference for new projects |
+| NEW_PROJECT_PROMPT.md | Copy-paste prompt for day-one setup |
+| ADD_SKILLS_TO_EXISTING_PROJECT.md | Retrofit skills into existing projects |
+| ADD_ACCESSIBILITY_TO_EXISTING_PROJECT.md | Add ADA compliance to existing projects |
+| INSTALL_UI_UX_PRO_MAX.md | Design intelligence skill setup and usage |
+| ELITE_PROMPTS.md | Library of copy-paste prompts for common tasks |
+
+## Tech Stack This Supports
+
+Next.js (App Router) | React | Tailwind CSS | Clerk | Supabase | Stripe | Vercel | Claude API
+
+## Updating
+
+When you add new skills or update templates, make changes in this repo first, then copy updated files to active projects.

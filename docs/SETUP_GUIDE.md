@@ -31,13 +31,9 @@ Create a new repository on GitHub for your project.
 
 Open your new repo in Claude Code and paste this prompt:
 
-> Copy the .claude/ folder, CLAUDE.md, and .env.example from my skeleton_startup repo into this project. Then commit and push.
+> Copy everything from the template/ folder in my skeleton_startup repo into this project root. Commit and push.
 
-Or manually copy these from the skeleton_startup repo into your new project:
-
-- `.claude/` folder (entire folder with all skills)
-- `CLAUDE.md`
-- `.env.example`
+This copies the `.claude/` skills, `.github/` templates, `CLAUDE.md`, and `.env.example` into your new project.
 
 ### Step 3: Customize CLAUDE.md
 

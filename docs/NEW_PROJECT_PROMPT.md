@@ -9,7 +9,7 @@ This is a new project called [PROJECT NAME]. It [DESCRIPTION].
 
 First, set up the project foundation:
 
-1. Copy the entire .claude/ folder (with all skills), CLAUDE.md, and .env.example from my skeleton_startup repo into this project root.
+1. Copy everything from the template/ folder in my skeleton_startup repo into this project root — this includes .claude/ skills, .github/ templates, CLAUDE.md, and .env.example. Then customize the CLAUDE.md with this project's details.
 
 2. Update the CLAUDE.md:
    - Change the project name to [PROJECT NAME]
