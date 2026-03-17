@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<!-- v1.2.0 — UI Prompt Launcher | Rob's Claude Code Design Tool -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI Prompt Launcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --bg-card: #161616;
+    --bg-elevated: #1e1e1e;
+    --bg-hover: #242424;
+    --border: rgba(255,255,255,0.07);
+    --border-active: rgba(255,255,255,0.18);
+    --text-primary: #f0ede8;
+    --text-secondary: #8a8680;
+    --text-muted: #555250;
+    --accent: #d4a853;
+    --accent-dim: rgba(212,168,83,0.12);
+    --accent-border: rgba(212,168,83,0.3);
+    --success: #4caf7d;
+    --success-bg: rgba(76,175,125,0.1);
+    --danger: #e06c6c;
+    --danger-bg: rgba(224,108,108,0.1);
+    --info-bg: rgba(255,255,255,0.04);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    --font-display: 'Poppins', system-ui, sans-serif;
+    --font-body: 'Poppins', system-ui, sans-serif;
+    --font-mono: 'DM Mono', 'Courier New', monospace;
+    --transition: 180ms ease;
+  }
+
+  /* Light mode tokens */
+  [data-theme="light"] {
+    --bg: #f5f3ef;
+    --bg-card: #ffffff;
+    --bg-elevated: #f0ede8;
+    --bg-hover: #e8e4de;
+    --border: rgba(0,0,0,0.08);
+    --border-active: rgba(0,0,0,0.18);
+    --text-primary: #1a1714;
+    --text-secondary: #6b6560;
+    --text-muted: #a09890;
+    --accent: #b8873a;
+    --accent-dim: rgba(184,135,58,0.1);
+    --accent-border: rgba(184,135,58,0.28);
+    --success: #2e7d52;
+    --success-bg: rgba(46,125,82,0.08);
+    --danger: #c0392b;
+    --danger-bg: rgba(192,57,43,0.08);
+    --info-bg: rgba(0,0,0,0.03);
+  }
+
+  /* Theme toggle */
+  .theme-toggle {
+    display: flex;
+    gap: 2px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 3px;
+  }
+  .theme-opt {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 8px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+    white-space: nowrap;
+  }
+  .theme-opt:hover { color: var(--text-secondary); background: var(--bg-hover); }
+  .theme-opt.active {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+  .theme-opt svg { flex-shrink: 0; }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Layout */
+  .shell {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    background: var(--bg-card);
+    border-right: 1px solid var(--border);
+    padding: 28px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .logo {
+    padding: 4px 0;
+  }
+  .logo-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.4px;
+    line-height: 1.2;
+  }
+  .logo-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .task-list { display: flex; flex-direction: column; gap: 4px; }
+
+  .task-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+    text-align: left;
+    transition: all var(--transition);
+    width: 100%;
+  }
+  .task-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+  .task-btn.active {
+    background: var(--accent-dim);
+    color: var(--accent);
+    border: 1px solid var(--accent-border);
+  }
+  .task-btn .task-icon {
+    width: 28px; height: 28px;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    background: var(--bg-elevated);
+    flex-shrink: 0;
+    transition: background var(--transition);
+  }
+  .task-btn.active .task-icon { background: var(--accent-dim); }
+  .task-btn .task-info { flex: 1; }
+  .task-btn .task-name { font-weight: 500; font-size: 13px; line-height: 1.3; }
+  .task-btn .task-desc { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .task-btn.active .task-desc { color: rgba(212,168,83,0.6); }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* API Key pill in sidebar */
+  .key-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: var(--radius-md);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .key-status:hover { border-color: var(--border-active); }
+  .key-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--danger);
+    flex-shrink: 0;
+    transition: background var(--transition);
+  }
+  .key-dot.active { background: var(--success); }
+  .key-status-text { font-size: 12px; color: var(--text-secondary); flex: 1; }
+  .key-edit-btn { font-size: 11px; color: var(--text-muted); }
+
+  /* Main content */
+  .main {
+    padding: 40px 48px;
+    max-width: 740px;
+  }
+
+  .page-header { margin-bottom: 36px; }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .page-subtitle { font-size: 14px; color: var(--text-secondary); }
+
+  /* Cards */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+  }
+
+  /* Fields */
+  .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+  }
+
+  input[type="text"],
+  input[type="password"],
+  textarea {
+    width: 100%;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    resize: vertical;
+    line-height: 1.6;
+  }
+  input[type="text"]:focus,
+  input[type="password"]:focus,
+  textarea:focus {
+    border-color: var(--accent-border);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+  }
+  input::placeholder, textarea::placeholder { color: var(--text-muted); font-size: 13px; }
+
+  /* Buttons */
+  .btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 13px 24px;
+    background: var(--accent);
+    color: #1a1200;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+    letter-spacing: 0.01em;
+  }
+  .btn-primary:hover { background: #ddb55f; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled {
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    transform: none;
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .btn-secondary:hover { border-color: var(--border-active); color: var(--text-primary); }
+  .btn-secondary.success {
+    background: var(--success-bg);
+    border-color: rgba(76,175,125,0.3);
+    color: var(--success);
+  }
+
+  .btn-ghost {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    transition: color var(--transition);
+  }
+  .btn-ghost:hover { color: var(--danger); }
+
+  /* Info box */
+  .info-box {
+    background: var(--info-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+  .info-box p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+  .info-box a { color: var(--accent); text-decoration: none; }
+  .info-box a:hover { text-decoration: underline; }
+  .info-box .info-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .warning-box {
+    background: var(--danger-bg);
+    border: 1px solid rgba(224,108,108,0.2);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--danger);
+    margin-top: 12px;
+    line-height: 1.6;
+  }
+
+  .security-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .security-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .security-list li::before {
+    content: "✓";
+    color: var(--success);
+    font-size: 12px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  /* Drop zone */
+  .drop-zone {
+    border: 1px dashed var(--border-active);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition);
+    background: var(--bg-elevated);
+  }
+  .drop-zone:hover { border-color: var(--accent-border); background: var(--accent-dim); }
+  .drop-zone.has-image { padding: 12px; }
+  .drop-zone img {
+    max-width: 100%;
+    max-height: 160px;
+    border-radius: var(--radius-md);
+    display: block;
+    margin: 0 auto 8px;
+    object-fit: contain;
+  }
+  .drop-zone p { font-size: 13px; color: var(--text-secondary); }
+  .drop-zone .drop-hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+  /* Output */
+  .output-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    margin-bottom: 20px;
+    animation: fadeUp 0.3s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .output-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .output-header-left { display: flex; align-items: center; gap: 10px; }
+  .output-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+  .output-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    background: var(--success-bg);
+    color: var(--success);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .output-body { padding: 24px; }
+  .prompt-text {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: var(--text-primary);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 420px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .prompt-text::-webkit-scrollbar { width: 4px; }
+  .prompt-text::-webkit-scrollbar-track { background: transparent; }
+  .prompt-text::-webkit-scrollbar-thumb { background: var(--border-active); border-radius: 4px; }
+
+  /* Spinner */
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(26,18,0,0.2);
+    border-top-color: #1a1200;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* API Key modal overlay */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .overlay.open { display: flex; }
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    width: 100%;
+    max-width: 480px;
+    margin: 20px;
+    animation: fadeUp 0.2s ease;
+  }
+  .modal-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+  .modal-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-actions .btn-primary { flex: 1; }
+  .btn-cancel {
+    padding: 12px 20px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .btn-cancel:hover { color: var(--text-primary); }
+
+  /* Key display row */
+  .key-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .key-row input { flex: 1; font-family: var(--font-mono); font-size: 13px; }
+  .key-clear { padding: 10px 14px; border-radius: var(--radius-md); }
+
+  /* Step number */
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent-border);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 500;
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; flex-direction: row; flex-wrap: wrap; padding: 16px; gap: 12px; }
+    .main { padding: 24px 20px; }
+    .task-list { flex-direction: row; flex-wrap: wrap; }
+    .task-btn { width: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" role="navigation" aria-label="Task navigation">
+    <div class="logo">
+      <div class="logo-title">Prompt Launcher</div>
+      <div class="logo-sub">Claude Code · UI Design</div>
+    </div>
+
+    <div>
+      <div class="sidebar-label">Task type</div>
+      <div class="task-list" role="list">
+        <button class="task-btn active" onclick="selectTask('landing')" id="btn-landing" role="listitem" aria-pressed="true">
+          <div class="task-icon" aria-hidden="true">🏠</div>
+          <div class="task-info">
+            <div class="task-name">Landing Page</div>
+            <div class="task-desc">Marketing & conversion</div>
+          </div>
+        </button>
+        <button class="task-btn" onclick="selectTask('dashboard')" id="btn-dashboard" role="listitem" aria-pressed="false">
+          <div class="task-icon" aria-hidden="true">📊</div>
+          <div class="task-info">
+            <div class="task-name">Dashboard</div>
+            <div class="task-desc">App UI & data display</div>
+          </div>
+        </button>
+        <button class="task-btn" onclick="selectTask('component')" id="btn-component" role="listitem" aria-pressed="false">
+          <div class="task-icon" aria-hidden="true">🧩</div>
+          <div class="task-info">
+            <div class="task-name">Component</div>
+            <div class="task-desc">Buttons, cards, forms</div>
+          </div>
+        </button>
+        <button class="task-btn" onclick="selectTask('redesign')" id="btn-redesign" role="listitem" aria-pressed="false">
+          <div class="task-icon" aria-hidden="true">✨</div>
+          <div class="task-info">
+            <div class="task-name">Redesign</div>
+            <div class="task-desc">Improve existing UI</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-label" style="margin-bottom:8px;">Appearance</div>
+      <div class="theme-toggle" role="group" aria-label="Color theme">
+        <button class="theme-opt" id="theme-light" onclick="setTheme('light')" aria-pressed="false" title="Light mode">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="2.5" fill="currentColor"/><line x1="6" y1="0" x2="6" y2="1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="10.5" x2="6" y2="12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="0" y1="6" x2="1.5" y2="6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="10.5" y1="6" x2="12" y2="6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="1.76" y1="1.76" x2="2.82" y2="2.82" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="9.18" y1="9.18" x2="10.24" y2="10.24" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="10.24" y1="1.76" x2="9.18" y2="2.82" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="2.82" y1="9.18" x2="1.76" y2="10.24" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Light
+        </button>
+        <button class="theme-opt" id="theme-dark" onclick="setTheme('dark')" aria-pressed="false" title="Dark mode">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M10.5 7.5A4.5 4.5 0 014.5 1.5a4.5 4.5 0 100 9 4.5 4.5 0 006-3z" fill="currentColor"/></svg>
+          Dark
+        </button>
+        <button class="theme-opt" id="theme-system" onclick="setTheme('system')" aria-pressed="false" title="System preference">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><rect x="1" y="1.5" width="10" height="7" rx="1.2" stroke="currentColor" stroke-width="1.1"/><line x1="4" y1="10.5" x2="8" y2="10.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="8.5" x2="6" y2="10.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Auto
+        </button>
+      </div>
+      <div style="height:16px;"></div>
+      <div class="sidebar-label" style="margin-bottom:8px;">API connection</div>
+      <button class="key-status" onclick="openKeyModal()" aria-label="Manage API key">
+        <div class="key-dot" id="key-dot"></div>
+        <div class="key-status-text" id="key-status-text">No key set</div>
+        <div class="key-edit-btn">Edit →</div>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main" id="main-content">
+
+    <header class="page-header">
+      <h1 class="page-title" id="page-title">Landing Page</h1>
+      <p class="page-subtitle" id="page-subtitle">Build a memorable, conversion-focused marketing page.</p>
+    </header>
+
+    <!-- Fields card -->
+    <div class="card" id="fields-card">
+      <div class="card-title">
+        <span class="step-num" aria-hidden="true">1</span>Describe your project
+      </div>
+      <div id="fields-container"></div>
+    </div>
+
+    <!-- Screenshot card (redesign only) -->
+    <div class="card" id="screenshot-card" style="display:none;">
+      <div class="card-title">
+        <span class="step-num" aria-hidden="true">2</span>Upload current screenshot
+        <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:6px;text-transform:none;letter-spacing:0;">(optional — adds vision analysis)</span>
+      </div>
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" role="button" tabindex="0" aria-label="Upload screenshot" onkeypress="if(event.key==='Enter')this.click()">
+        <div id="drop-placeholder">
+          <p>Click to upload a screenshot</p>
+          <p class="drop-hint">PNG, JPG, or WebP · Claude will analyze it and include specific observations</p>
+        </div>
+        <div id="drop-preview" style="display:none;">
+          <img id="preview-img" alt="Screenshot preview" />
+          <p style="font-size:12px;color:var(--text-muted);">Click to replace</p>
+        </div>
+      </div>
+      <input type="file" id="file-input" accept="image/png,image/jpeg,image/webp" style="display:none;" aria-label="File input for screenshot" />
+    </div>
+
+    <!-- Generate button -->
+    <button class="btn-primary" id="gen-btn" onclick="handleGenerate()" disabled aria-label="Generate Claude Code prompt">
+      Generate Prompt
+    </button>
+
+    <!-- Output -->
+    <div id="output-section" style="display:none;margin-top:24px;">
+      <div class="output-card">
+        <div class="output-header">
+          <div class="output-header-left">
+            <span class="output-label">Claude Code prompt — ready to paste</span>
+            <span class="output-badge">GENERATED</span>
+          </div>
+          <button class="btn-secondary" id="copy-btn" onclick="handleCopy()" aria-label="Copy prompt to clipboard">
+            Copy to clipboard
+          </button>
+        </div>
+        <div class="output-body">
+          <pre class="prompt-text" id="prompt-output" tabindex="0" aria-label="Generated prompt"></pre>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);text-align:center;">Paste this directly into Claude Code Desktop → it will stop and present a design system before writing any code.</p>
+    </div>
+
+  </main>
+</div>
+
+<!-- API Key Modal -->
+<div class="overlay" id="key-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <h2 class="modal-title" id="modal-title">API Key Setup</h2>
+    <p class="modal-sub">Your key is stored only in your browser's local storage on this device. It is never embedded in this file and never sent anywhere except directly to Anthropic.</p>
+
+    <div class="info-box">
+      <div class="info-title">🔑 Where to get your key</div>
+      <p>Go to <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer">console.anthropic.com/settings/keys</a> → click <strong>Create Key</strong> → copy and paste it below. Keys start with <code style="font-family:var(--font-mono);font-size:12px;background:rgba(255,255,255,0.07);padding:1px 5px;border-radius:3px;">sk-ant-</code></p>
+    </div>
+
+    <div class="field">
+      <label for="key-input">Paste your Anthropic API key</label>
+      <div class="key-row">
+        <input type="password" id="key-input" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false" />
+        <button class="btn-ghost key-clear" onclick="clearKey()" id="clear-key-btn" style="display:none;" aria-label="Remove saved key">Remove</button>
+      </div>
+    </div>
+
+    <ul class="security-list" aria-label="Security protections">
+      <li>Key stored in browser localStorage — never in this HTML file</li>
+      <li>Sent only to <code style="font-family:var(--font-mono);font-size:12px;">api.anthropic.com</code> over HTTPS</li>
+      <li>Never shared, logged, or sent anywhere else</li>
+      <li>Remove it anytime with the button above</li>
+    </ul>
+
+    <div class="warning-box" role="alert">
+      ⚠ Do not share this HTML file with anyone after pasting a key. If you need to share the launcher, share a fresh copy of the original file.
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeKeyModal()" aria-label="Cancel">Cancel</button>
+      <button class="btn-primary" onclick="saveKey()" aria-label="Save API key">Save Key</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Theme ── */
+function applyTheme(pref) {
+  const root = document.documentElement;
+  if (pref === 'light') {
+    root.setAttribute('data-theme', 'light');
+  } else if (pref === 'dark') {
+    root.removeAttribute('data-theme');
+  } else {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (prefersDark) root.removeAttribute('data-theme');
+    else root.setAttribute('data-theme', 'light');
+  }
+}
+
+function setTheme(pref) {
+  localStorage.setItem('theme', pref);
+  applyTheme(pref);
+  ['light','dark','system'].forEach(t => {
+    const btn = document.getElementById('theme-' + t);
+    btn.classList.toggle('active', t === pref);
+    btn.setAttribute('aria-pressed', t === pref ? 'true' : 'false');
+  });
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('theme') || 'system';
+  setTheme(saved);
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (localStorage.getItem('theme') === 'system') applyTheme('system');
+  });
+}
+
+const TASKS = {
+  landing: {
+    title: "Landing Page",
+    subtitle: "Build a memorable, conversion-focused marketing page.",
+    fields: [
+      { key: "appName", label: "App / product name", type: "text", placeholder: "e.g. Notely" },
+      { key: "description", label: "What it does & who it's for", type: "textarea", placeholder: "e.g. Note-taking app for busy freelancers who need fast capture and organization" },
+      { key: "features", label: "3 key features to highlight", type: "textarea", placeholder: "e.g. AI summaries, offline sync, team sharing" },
+      { key: "pricing", label: "Pricing tiers (optional)", type: "text", placeholder: "e.g. Free · Pro $12/mo · Team $29/mo" },
+      { key: "vibe", label: "Visual vibe / tone direction", type: "text", placeholder: "e.g. clean SaaS, bold startup, warm & editorial, dark luxury" },
+      { key: "reference", label: "Reference sites for inspiration (optional)", type: "text", placeholder: "e.g. linear.app, vercel.com, stripe.com" },
+    ]
+  },
+  dashboard: {
+    title: "Dashboard",
+    subtitle: "Design a focused, data-rich authenticated app interface.",
+    fields: [
+      { key: "appName", label: "App name", type: "text", placeholder: "e.g. Notely" },
+      { key: "userRole", label: "Who sees this dashboard", type: "text", placeholder: "e.g. authenticated users managing their projects" },
+      { key: "content", label: "What data or content is displayed", type: "textarea", placeholder: "e.g. recent activity feed, revenue metrics, quick action buttons, project list" },
+      { key: "vibe", label: "Visual vibe / tone direction", type: "text", placeholder: "e.g. minimal dark like Linear, clean light SaaS, data-dense" },
+      { key: "reference", label: "Reference UIs (optional)", type: "text", placeholder: "e.g. Linear, Vercel dashboard, Notion" },
+    ]
+  },
+  component: {
+    title: "Component",
+    subtitle: "Build a polished, accessible, reusable UI component.",
+    fields: [
+      { key: "componentType", label: "Component type", type: "text", placeholder: "e.g. pricing card, settings form, notification sidebar, command palette" },
+      { key: "appContext", label: "What app is this for", type: "text", placeholder: "e.g. SaaS analytics platform for marketing teams" },
+      { key: "states", label: "States it needs to handle", type: "text", placeholder: "e.g. default, hover, loading, error, disabled, active" },
+      { key: "vibe", label: "Visual vibe / tone direction", type: "text", placeholder: "e.g. minimal, bold CTA, card-based, dark mode" },
+      { key: "notes", label: "Specific requirements (optional)", type: "textarea", placeholder: "e.g. use shadcn/ui Button as base, needs dark mode, animated entrance, accessible" },
+    ]
+  },
+  redesign: {
+    title: "Redesign",
+    subtitle: "Transform an existing page with a full visual overhaul — no functionality changes.",
+    fields: [
+      { key: "pageName", label: "What's being redesigned", type: "text", placeholder: "e.g. pricing page, main dashboard, sign-up flow" },
+      { key: "appName", label: "App name", type: "text", placeholder: "e.g. Notely" },
+      { key: "problems", label: "What's wrong with the current design", type: "textarea", placeholder: "e.g. looks generic, no visual hierarchy, boring colors, zero personality, cluttered layout" },
+      { key: "vibe", label: "Desired new direction", type: "text", placeholder: "e.g. clean SaaS like Linear, bold editorial, warm & modern" },
+      { key: "keepFunctionality", label: "What functionality must be preserved", type: "textarea", placeholder: "e.g. all existing logic and data stays the same — visual redesign only, no changes to API calls or state management" },
+    ]
+  }
+};
+
+const SYSTEM_PROMPT = `You are an expert prompt engineer for Claude Code — an AI coding assistant that builds Next.js/React applications. Write a single, detailed, copy-paste-ready prompt that a developer will paste directly into Claude Code.
+
+Developer stack: Next.js App Router, React, Tailwind CSS, shadcn/ui, Clerk (auth), Supabase (database), Stripe (payments), Vercel (hosting). No local dev environment.
+
+Active Claude Code skills:
+- frontend-design: bold, distinctive UI — no generic AI aesthetics (forbid Inter/Roboto/Arial, purple gradients, cookie-cutter layouts)
+- web-design-guidelines: WCAG 2.1 AA accessibility
+- composition-patterns: clean React component architecture
+- react-best-practices: performance optimization
+- ui-ux-pro-max: design system generator (67 styles, 96 palettes, 57 font pairings)
+
+RULES your prompt must enforce:
+
+1. START with exactly: "Before writing any code, generate a design system recommendation for this task. Present: the visual style direction, a distinctive Google Fonts typography pairing (display font + body font with @import), a color palette with specific hex values, layout approach, animation philosophy, and 3 specific anti-patterns to avoid for this UI type. STOP and wait for my approval before writing any code."
+
+2. Accessibility is non-negotiable: 4.5:1 color contrast minimum, visible focus rings on all interactive elements, semantic HTML (nav/main/section/article — no div soup), full keyboard navigation, ARIA labels on all inputs/buttons, minimum 44×44px touch targets, prefers-reduced-motion respected.
+
+3. Typography: must use Google Fonts — pair a characterful display font with a refined body font. Explicitly forbid Inter, Roboto, Arial, system-ui.
+
+4. Design tokens: all colors, spacing, typography, radius, and transitions defined as CSS custom properties in globals.css, referenced throughout. No hardcoded hex values in components.
+
+5. No generic AI output: forbid purple-on-white gradients, default card grids, hero sections with stock photo slots, predictable component patterns with no personality.
+
+6. shadcn/ui: use existing shadcn primitives from components/ui/ for interactive elements (Button, Dialog, Select, etc). Never import components that aren't already installed — check components/ui/ first.
+
+7. END with: "Provide the complete file(s) with a version header comment (v1.0.0) at the top of each file. Commit and push when done."
+
+Write ONE complete, polished prompt. Be specific and reference the actual details provided. Write as a senior product designer who knows exactly what they want. Output ONLY the raw prompt text starting with "Before writing any code..."`;
+
+let currentTask = 'landing';
+let fieldValues = {};
+let screenshotData = null;
+
+function init() {
+  initTheme();
+  renderFields('landing');
+  loadKeyStatus();
+}
+
+function selectTask(id) {
+  currentTask = id;
+  fieldValues = {};
+  screenshotData = null;
+
+  Object.keys(TASKS).forEach(t => {
+    const btn = document.getElementById(`btn-${t}`);
+    btn.className = t === id ? 'task-btn active' : 'task-btn';
+    btn.setAttribute('aria-pressed', t === id ? 'true' : 'false');
+  });
+
+  const task = TASKS[id];
+  document.getElementById('page-title').textContent = task.title;
+  document.getElementById('page-subtitle').textContent = task.subtitle;
+
+  renderFields(id);
+
+  document.getElementById('screenshot-card').style.display = id === 'redesign' ? 'block' : 'none';
+  document.getElementById('drop-preview').style.display = 'none';
+  document.getElementById('drop-placeholder').style.display = 'block';
+  document.getElementById('preview-img').src = '';
+
+  document.getElementById('output-section').style.display = 'none';
+  updateGenBtn();
+}
+
+function renderFields(id) {
+  const container = document.getElementById('fields-container');
+  container.innerHTML = '';
+  TASKS[id].fields.forEach(f => {
+    const wrap = document.createElement('div');
+    wrap.className = 'field';
+
+    const lbl = document.createElement('label');
+    lbl.setAttribute('for', `field-${f.key}`);
+    lbl.textContent = f.label;
+    wrap.appendChild(lbl);
+
+    let el;
+    if (f.type === 'textarea') {
+      el = document.createElement('textarea');
+      el.rows = 3;
+    } else {
+      el = document.createElement('input');
+      el.type = 'text';
+    }
+    el.id = `field-${f.key}`;
+    el.placeholder = f.placeholder;
+    el.oninput = () => { fieldValues[f.key] = el.value; updateGenBtn(); };
+    wrap.appendChild(el);
+    container.appendChild(wrap);
+  });
+}
+
+function updateGenBtn() {
+  const hasKey = !!localStorage.getItem('anthropic_api_key');
+  const hasInput = Object.values(fieldValues).some(v => v && v.trim() !== '');
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = !hasKey || !hasInput;
+  if (!hasKey) {
+    btn.textContent = 'Set API key to generate →';
+  } else if (!hasInput) {
+    btn.textContent = 'Fill in at least one field →';
+  } else {
+    btn.textContent = 'Generate Prompt →';
+  }
+}
+
+document.getElementById('file-input').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    screenshotData = { data: reader.result.split(',')[1], type: file.type };
+    document.getElementById('preview-img').src = reader.result;
+    document.getElementById('drop-preview').style.display = 'block';
+    document.getElementById('drop-placeholder').style.display = 'none';
+    const dz = document.getElementById('drop-zone');
+    dz.classList.add('has-image');
+  };
+  reader.readAsDataURL(file);
+});
+
+async function handleGenerate() {
+  const apiKey = localStorage.getItem('anthropic_api_key');
+  if (!apiKey) { openKeyModal(); return; }
+
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Generating...';
+
+  const task = TASKS[currentTask];
+  const contextLines = task.fields
+    .map(f => `${f.label}: ${fieldValues[f.key] || '(not specified)'}`)
+    .join('\n');
+  const userText = `Task type: ${task.title}\n\n${contextLines}`;
+
+  let messageContent;
+  if (currentTask === 'redesign' && screenshotData) {
+    messageContent = [
+      { type: 'image', source: { type: 'base64', media_type: screenshotData.type, data: screenshotData.data } },
+      { type: 'text', text: userText + '\n\nA screenshot of the current design is attached. Analyze it and reference specific observations (typography issues, layout problems, color weaknesses) in the redesign prompt.' }
+    ];
+  } else {
+    messageContent = userText;
+  }
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: messageContent }]
+      })
+    });
+
+    if (res.status === 401) {
+      showOutput('Invalid API key. Please check your key in the API setup panel and try again.');
+      return;
+    }
+
+    const data = await res.json();
+    const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+    showOutput(text || 'No response received. Please try again.');
+  } catch (err) {
+    showOutput('Connection error. Check your internet connection and try again.\n\nError: ' + err.message);
+  } finally {
+    btn.innerHTML = 'Generate Prompt →';
+    updateGenBtn();
+  }
+}
+
+function showOutput(text) {
+  document.getElementById('prompt-output').textContent = text;
+  document.getElementById('output-section').style.display = 'block';
+  document.getElementById('copy-btn').textContent = 'Copy to clipboard';
+  document.getElementById('copy-btn').className = 'btn-secondary';
+  document.getElementById('output-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function handleCopy() {
+  const text = document.getElementById('prompt-output').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    btn.className = 'btn-secondary success';
+    setTimeout(() => {
+      btn.textContent = 'Copy to clipboard';
+      btn.className = 'btn-secondary';
+    }, 2500);
+  }).catch(() => {
+    const el = document.getElementById('prompt-output');
+    el.focus();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  });
+}
+
+/* API Key Modal */
+function openKeyModal() {
+  const existing = localStorage.getItem('anthropic_api_key');
+  const input = document.getElementById('key-input');
+  const clearBtn = document.getElementById('clear-key-btn');
+  if (existing) {
+    input.placeholder = '••••••••••••' + existing.slice(-4);
+    input.value = '';
+    clearBtn.style.display = 'inline-flex';
+  } else {
+    input.placeholder = 'sk-ant-api03-...';
+    clearBtn.style.display = 'none';
+  }
+  document.getElementById('key-overlay').classList.add('open');
+  setTimeout(() => input.focus(), 100);
+}
+
+function closeKeyModal() {
+  document.getElementById('key-overlay').classList.remove('open');
+  document.getElementById('key-input').value = '';
+}
+
+function saveKey() {
+  const val = document.getElementById('key-input').value.trim();
+  if (!val) { closeKeyModal(); return; }
+  if (!val.startsWith('sk-ant-')) {
+    alert('That doesn\'t look like an Anthropic API key. Keys start with sk-ant-');
+    return;
+  }
+  localStorage.setItem('anthropic_api_key', val);
+  closeKeyModal();
+  loadKeyStatus();
+  updateGenBtn();
+}
+
+function clearKey() {
+  if (confirm('Remove your saved API key from this browser?')) {
+    localStorage.removeItem('anthropic_api_key');
+    closeKeyModal();
+    loadKeyStatus();
+    updateGenBtn();
+  }
+}
+
+function loadKeyStatus() {
+  const key = localStorage.getItem('anthropic_api_key');
+  const dot = document.getElementById('key-dot');
+  const text = document.getElementById('key-status-text');
+  if (key) {
+    dot.classList.add('active');
+    text.textContent = '••••' + key.slice(-4) + ' · Connected';
+  } else {
+    dot.classList.remove('active');
+    text.textContent = 'No key — click to set';
+  }
+}
+
+/* Escape key closes modal */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeKeyModal();
+});
+
+/* Click outside modal closes it */
+document.getElementById('key-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('key-overlay')) closeKeyModal();
+});
+
+/* Enter saves key */
+document.getElementById('key-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveKey();
+});
+
+init();
+</script>
+</body>
+</html>
